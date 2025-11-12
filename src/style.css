@@ -1,0 +1,75 @@
+@import "tailwindcss";
+
+body {
+  margin: 0;
+  background-color: #0A2342;
+  color: white;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#app {
+  min-height: 100vh;
+  width: 100%;
+}
+
+.blueprint-border {
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  transition: border-color 0.3s;
+}
+
+.blueprint-border:hover {
+  border-color: #00FFFF;
+}
+
+.blueprint-card {
+  background-color: rgba(6, 24, 41, 0.5);
+  backdrop-filter: blur(4px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.3s;
+}
+
+.blueprint-card:hover {
+  border-color: rgba(0, 255, 255, 0.5);
+}
+
+.blueprint-input {
+  background-color: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  transition: all 0.3s;
+}
+
+.blueprint-input::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.blueprint-input:focus {
+  border-color: #00FFFF;
+  outline: none;
+  box-shadow: 0 0 0 1px #00FFFF;
+}
+
+.blueprint-button {
+  background-color: transparent;
+  border: 1px solid #00FFFF;
+  color: #00FFFF;
+  font-weight: 500;
+  transition: all 0.3s;
+}
+
+.blueprint-button:hover {
+  background-color: #00FFFF;
+  color: #0A2342;
+  box-shadow: 0 10px 15px -3px rgba(0, 255, 255, 0.5);
+}
+
+.blueprint-glow:hover {
+  box-shadow: 0 10px 15px -3px rgba(0, 255, 255, 0.3);
+  transition: box-shadow 0.3s;
+}
+
+.text-shadow-glow {
+  text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+}
