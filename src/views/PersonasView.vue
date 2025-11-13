@@ -173,11 +173,6 @@ const formData = ref<PersonaFormData>({
   edad: 0,
   correo: [''],
   telefono: [''],
-  direcciones: [{
-    calle: '',
-    numero: '',
-    piso: '',
-  }],
 });
 
 const resetFormData = () => {
@@ -192,11 +187,6 @@ const resetFormData = () => {
     edad: 0,
     correo: [''],
     telefono: [''],
-    direcciones: [{
-      calle: '',
-      numero: '',
-      piso: '',
-    }],
   };
 };
 
@@ -208,8 +198,6 @@ const openCreateModal = () => {
 };
 
 const openEditModal = async (persona: Persona) => {
-  console.log('=== OPENING EDIT MODAL ===');
-  console.log('Persona to edit:', JSON.stringify(persona, null, 2));
   isEditing.value = true;
 
   if (persona.iD_Persona) {

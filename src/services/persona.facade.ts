@@ -9,9 +9,6 @@ class PersonaFacade {
   }
 
   private normalizePersona(persona: any): Persona {
-    console.log('=== NORMALIZING PERSONA ===');
-    console.log('Direcciones from backend:', JSON.stringify(persona.direcciones, null, 2));
-
     return {
       ...persona,
       correo: persona.correo || [],
@@ -66,13 +63,6 @@ class PersonaFacade {
     try {
       const correos = persona.correo.filter(c => c && c.trim() !== '');
       const telefonos = persona.telefono.filter(t => t && t.trim() !== '');
-      const direcciones = persona.direcciones
-        .filter(d => d.calle && d.numero && d.piso && d.calle.trim() !== '' && d.numero.trim() !== '' && d.piso.trim() !== '')
-        .map(d => ({
-          calle: d.calle.trim(),
-          numero: d.numero.trim(),
-          piso: d.piso.trim()
-        }));
 
       const payload: any = {
         iD_Persona: this.generateGUID(),
@@ -86,7 +76,7 @@ class PersonaFacade {
         edad: Number(persona.edad) || 0,
         correo: correos.length > 0 ? correos : null,
         telefono: telefonos.length > 0 ? telefonos : null,
-        direcciones: direcciones,
+        direcciones: [],
         dateCreated: this.getCurrentDate()
       };
 
@@ -102,21 +92,6 @@ class PersonaFacade {
     try {
       const correos = persona.correo.filter(c => c && c.trim() !== '');
       const telefonos = persona.telefono.filter(t => t && t.trim() !== '');
-      const direcciones = persona.direcciones
-        .filter(d => d.calle && d.numero && d.piso && d.calle.trim() !== '' && d.numero.trim() !== '' && d.piso.trim() !== '')
-        .map(d => {
-          const result: any = {
-            calle: d.calle.trim(),
-            numero: d.numero.trim(),
-            piso: d.piso.trim()
-          };
-
-          if (d.iD_Direccion) {
-            result.iD_Direccion = d.iD_Direccion;
-          }
-
-          return result;
-        });
 
       const payload: any = {
         iD_Persona: id,
@@ -130,22 +105,14 @@ class PersonaFacade {
         edad: Number(persona.edad) || 0,
         correo: correos.length > 0 ? correos : null,
         telefono: telefonos.length > 0 ? telefonos : null,
-        direcciones: direcciones,
+        direcciones: originalPersona?.direcciones || [],
         dateCreated: originalPersona?.dateCreated || this.getCurrentDate()
       };
-
-      console.log('=== UPDATING PAYLOAD ===');
-      console.log(JSON.stringify(payload, null, 2));
 
       const response = await apiService.put<Persona>(`${this.baseURL}/api/Persona/${id}`, payload);
       return this.normalizePersona(response.data);
     } catch (error) {
-      console.error('=== ERROR UPDATING PERSONA ===');
-      console.error('Error:', error);
-      if ((error as any).response) {
-        console.error('Response data:', JSON.stringify((error as any).response.data, null, 2));
-        console.error('Response status:', (error as any).response.status);
-      }
+      console.error('Error updating persona:', error);
       throw error;
     }
   }

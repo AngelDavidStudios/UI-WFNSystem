@@ -62,7 +62,6 @@ export interface PersonaFormData {
   edad: number;
   correo: string[];
   telefono: string[];
-  direcciones: Direccion[];
 }
 
 export interface Departamento {

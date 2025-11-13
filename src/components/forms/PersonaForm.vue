@@ -153,59 +153,6 @@
         </div>
       </div>
     </div>
-
-    <div class="border-t border-white/20 pt-6">
-      <div class="flex items-center justify-between mb-4">
-        <h3 class="text-lg font-semibold text-blueprint-primary uppercase">Direcciones</h3>
-        <button
-          type="button"
-          @click="addDireccion"
-          class="text-blueprint-primary hover:text-white transition-colors text-sm flex items-center gap-1"
-        >
-          <PlusIcon class="h-4 w-4" />
-          Agregar Dirección
-        </button>
-      </div>
-      <div class="space-y-4">
-        <div
-          v-for="(_direccion, index) in formData.direcciones"
-          :key="index"
-          class="blueprint-card p-4 relative"
-        >
-          <button
-            v-if="formData.direcciones.length > 1"
-            type="button"
-            @click="removeDireccion(index)"
-            class="absolute top-2 right-2 text-red-400 hover:text-red-300 transition-colors"
-          >
-            <TrashIcon class="h-5 w-5" />
-          </button>
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-            <BlueprintInput
-              :id="`calle-${index}`"
-              v-model="formData.direcciones[index].calle"
-              label="CALLE"
-              placeholder="Ingrese calle"
-              required
-            />
-            <BlueprintInput
-              :id="`numero-${index}`"
-              v-model="formData.direcciones[index].numero"
-              label="NÚMERO"
-              placeholder="Ingrese número"
-              required
-            />
-            <BlueprintInput
-              :id="`piso-${index}`"
-              v-model="formData.direcciones[index].piso"
-              label="PISO"
-              placeholder="Ingrese piso"
-              required
-            />
-          </div>
-        </div>
-      </div>
-    </div>
   </form>
 </template>
 
@@ -230,12 +177,6 @@ const formData = ref<PersonaFormData>({ ...props.modelValue });
 
 watch(() => props.persona, (newPersona) => {
   if (newPersona) {
-    console.log('=== PERSONA FORM INIT ===');
-    console.log('Persona direcciones:', JSON.stringify(newPersona.direcciones, null, 2));
-
-    const mappedDirecciones = newPersona.direcciones.map(d => ({ ...d }));
-    console.log('Mapped direcciones:', JSON.stringify(mappedDirecciones, null, 2));
-
     formData.value = {
       dni: newPersona.dni,
       gender: newPersona.gender,
@@ -247,7 +188,6 @@ watch(() => props.persona, (newPersona) => {
       edad: newPersona.edad,
       correo: [...newPersona.correo],
       telefono: [...newPersona.telefono],
-      direcciones: mappedDirecciones,
     };
   }
 }, { immediate: true });
@@ -272,17 +212,6 @@ const removeTelefono = (index: number) => {
   formData.value.telefono.splice(index, 1);
 };
 
-const addDireccion = () => {
-  formData.value.direcciones.push({
-    calle: '',
-    numero: '',
-    piso: '',
-  });
-};
-
-const removeDireccion = (index: number) => {
-  formData.value.direcciones.splice(index, 1);
-};
 
 const handleSubmit = () => {
   emit('submit');
