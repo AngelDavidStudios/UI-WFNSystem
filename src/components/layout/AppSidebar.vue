@@ -45,6 +45,11 @@ const uiStore = useUIStore();
 
 const menuItems: MenuItem[] = [
   {
+    id: 'dashboard',
+    label: 'Dashboard',
+    path: '/dashboard',
+  },
+  {
     id: 'personas',
     label: 'Personas',
     path: '/personas',

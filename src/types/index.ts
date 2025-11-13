@@ -234,6 +234,8 @@ export interface NominaFormData {
 
 export interface Workspace {
   iD_Workspace?: string;
+  nombre: string;
+  periodo: string;
   nominas: Nomina[];
   fechaCreacion: string;
   fechaCierre: string;
