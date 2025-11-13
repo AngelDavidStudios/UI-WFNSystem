@@ -175,6 +175,7 @@ import NovedadBuilderForm from '@/components/forms/NovedadBuilderForm.vue';
 import { useNominaStore } from '@/stores/nomina.store';
 import { useEmpleadoStore } from '@/stores/empleado.store';
 import { usePersonaStore } from '@/stores/persona.store';
+import { useWorkspaceStore } from '@/stores/workspace.store';
 import type { NominaFormData, IngresoFormData, EgresoFormData, NovedadNomina } from '@/types';
 
 const router = useRouter();
@@ -182,6 +183,7 @@ const route = useRoute();
 const nominaStore = useNominaStore();
 const empleadoStore = useEmpleadoStore();
 const personaStore = usePersonaStore();
+const workspaceStore = useWorkspaceStore();
 
 const isEditMode = ref(false);
 const nominaId = ref<string | undefined>();
@@ -269,21 +271,32 @@ const handleSave = async () => {
   formData.value.ingresos = ingresos.value;
   formData.value.egresos = egresos.value;
 
-  let success = false;
-  if (isEditMode.value && nominaId.value) {
-    success = await nominaStore.update(nominaId.value, formData.value);
-  } else {
-    success = await nominaStore.create(formData.value);
-  }
+  const workspaceId = route.params.id as string;
 
-  if (success) {
+  try {
+    if (isEditMode.value && nominaId.value) {
+      await nominaStore.update(nominaId.value, formData.value);
+    } else {
+      await nominaStore.create(formData.value);
+    }
+
     await nominaStore.fetchAll();
-    const workspaceId = route.params.id;
+
     if (workspaceId) {
+      const workspace = await workspaceStore.fetchById(workspaceId);
+      if (workspace) {
+        const allNominas = nominaStore.nominas;
+        await workspaceStore.update(workspaceId, {
+          nominas: allNominas
+        });
+        await workspaceStore.fetchById(workspaceId);
+      }
       router.push(`/workspaces/${workspaceId}`);
     } else {
       router.push('/workspaces');
     }
+  } catch (error) {
+    console.error('Error al guardar nómina:', error);
   }
 };
 
