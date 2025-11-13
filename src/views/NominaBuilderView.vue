@@ -304,9 +304,9 @@ onMounted(async () => {
     await personaStore.fetchAll();
   }
 
-  if (route.params.id) {
+  if (route.params.nominaId) {
     isEditMode.value = true;
-    nominaId.value = route.params.id as string;
+    nominaId.value = route.params.nominaId as string;
     const nomina = await nominaStore.fetchById(nominaId.value);
     if (nomina) {
       formData.value.iD_Empleado = nomina.iD_Empleado;

@@ -59,8 +59,8 @@ export const useNominaStore = defineStore('nomina', () => {
     loading.value = true;
     error.value = null;
     try {
-      const newNomina = await nominaFacade.create(data);
-      nominas.value.push(newNomina);
+      await nominaFacade.create(data);
+      await fetchAll();
       return true;
     } catch (err) {
       error.value = 'Error al crear la nómina';
@@ -75,11 +75,8 @@ export const useNominaStore = defineStore('nomina', () => {
     loading.value = true;
     error.value = null;
     try {
-      const updatedNomina = await nominaFacade.update(id, data);
-      const index = nominas.value.findIndex(n => n.iD_Nomina === id);
-      if (index !== -1) {
-        nominas.value[index] = updatedNomina;
-      }
+      await nominaFacade.update(id, data);
+      await fetchAll();
       return true;
     } catch (err) {
       error.value = 'Error al actualizar la nómina';
