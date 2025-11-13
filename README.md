@@ -46,11 +46,11 @@
 
 
 ## Link de la Aplicación Web en Netlify
-> - [minicore-25.netlify.app](https://workforcenexxus.netlify.app/)
+> - [workforcenexxus.netlify.app](https://workforcenexxus.netlify.app/)
 
 
 ## Video explicacion del proyecto.
-> - [Explicacion del proyecto Administracion MVC. ](https://youtu.be/Ul01LoOcyxg)
+> - [Explicacion del proyecto Administracion MVC. ](https://youtu.be/uktmgr9V3bE)
 
 ## Instrucciones
 
