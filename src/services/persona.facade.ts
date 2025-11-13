@@ -101,11 +101,19 @@ class PersonaFacade {
       const telefonos = persona.telefono.filter(t => t && t.trim() !== '');
       const direcciones = persona.direcciones
         .filter(d => d.calle && d.numero && d.piso && d.calle.trim() !== '' && d.numero.trim() !== '' && d.piso.trim() !== '')
-        .map(d => ({
-          calle: d.calle.trim(),
-          numero: d.numero.trim(),
-          piso: d.piso.trim()
-        }));
+        .map(d => {
+          const result: any = {
+            calle: d.calle.trim(),
+            numero: d.numero.trim(),
+            piso: d.piso.trim()
+          };
+
+          if (d.iD_Direccion) {
+            result.iD_Direccion = d.iD_Direccion;
+          }
+
+          return result;
+        });
 
       const payload: any = {
         iD_Persona: id,
