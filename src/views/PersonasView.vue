@@ -207,9 +207,18 @@ const openCreateModal = () => {
   showFormModal.value = true;
 };
 
-const openEditModal = (persona: Persona) => {
+const openEditModal = async (persona: Persona) => {
+  console.log('=== OPENING EDIT MODAL ===');
+  console.log('Persona to edit:', JSON.stringify(persona, null, 2));
   isEditing.value = true;
-  selectedPersona.value = persona;
+
+  if (persona.iD_Persona) {
+    await personaStore.fetchById(persona.iD_Persona);
+    selectedPersona.value = personaStore.personas.find(p => p.iD_Persona === persona.iD_Persona) || persona;
+  } else {
+    selectedPersona.value = persona;
+  }
+
   showFormModal.value = true;
 };
 
