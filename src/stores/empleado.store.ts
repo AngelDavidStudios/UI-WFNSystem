@@ -28,8 +28,8 @@ export const useEmpleadoStore = defineStore('empleado', () => {
     error.value = null;
 
     try {
-      const newEmpleado = await empleadoFacade.create(empleado);
-      empleados.value.push(newEmpleado);
+      await empleadoFacade.create(empleado);
+      await fetchAll();
       return true;
     } catch (err) {
       error.value = 'Error al crear el empleado';
@@ -46,11 +46,8 @@ export const useEmpleadoStore = defineStore('empleado', () => {
 
     try {
       const currentEmpleado = empleados.value.find(e => e.iD_Empleado === id);
-      const updatedEmpleado = await empleadoFacade.update(id, empleado, currentEmpleado);
-      const index = empleados.value.findIndex(e => e.iD_Empleado === id);
-      if (index !== -1) {
-        empleados.value[index] = updatedEmpleado;
-      }
+      await empleadoFacade.update(id, empleado, currentEmpleado);
+      await fetchAll();
       return true;
     } catch (err) {
       error.value = 'Error al actualizar el empleado';

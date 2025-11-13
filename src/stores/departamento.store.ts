@@ -42,8 +42,8 @@ export const useDepartamentoStore = defineStore('departamento', () => {
     error.value = null;
 
     try {
-      const newDepartamento = await departamentoFacade.create(departamento);
-      departamentos.value.push(newDepartamento);
+      await departamentoFacade.create(departamento);
+      await fetchAll();
       return true;
     } catch (err) {
       error.value = 'Error al crear el departamento';
@@ -59,11 +59,8 @@ export const useDepartamentoStore = defineStore('departamento', () => {
     error.value = null;
 
     try {
-      const updatedDepartamento = await departamentoFacade.update(id, departamento);
-      const index = departamentos.value.findIndex(d => d.iD_Departamento === id);
-      if (index !== -1) {
-        departamentos.value[index] = updatedDepartamento;
-      }
+      await departamentoFacade.update(id, departamento);
+      await fetchAll();
       return true;
     } catch (err) {
       error.value = 'Error al actualizar el departamento';

@@ -49,14 +49,7 @@ class DepartamentoFacade {
         centroCosto: departamento.centroCosto?.trim() || ''
       };
 
-      console.log('=== CREATING DEPARTAMENTO ===');
-      console.log('Payload:', JSON.stringify(payload, null, 2));
-
       const response = await apiService.post(`${this.baseURL}/api/Departamento`, payload);
-
-      console.log('=== RESPONSE ===');
-      console.log('Type:', typeof response.data);
-      console.log('Data:', response.data);
 
       if (typeof response.data === 'string') {
         return payload as Departamento;
@@ -81,14 +74,7 @@ class DepartamentoFacade {
         centroCosto: departamento.centroCosto?.trim() || ''
       };
 
-      console.log('=== UPDATING DEPARTAMENTO ===');
-      console.log('Payload:', JSON.stringify(payload, null, 2));
-
       const response = await apiService.put(`${this.baseURL}/api/Departamento/${id}`, payload);
-
-      console.log('=== RESPONSE ===');
-      console.log('Type:', typeof response.data);
-      console.log('Data:', response.data);
 
       if (typeof response.data === 'string') {
         return payload as Departamento;

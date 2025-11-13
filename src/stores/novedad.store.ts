@@ -28,8 +28,8 @@ export const useNovedadStore = defineStore('novedad', () => {
     error.value = null;
 
     try {
-      const newNovedad = await novedadFacade.create(novedad);
-      novedades.value.push(newNovedad);
+      await novedadFacade.create(novedad);
+      await fetchAll();
       return true;
     } catch (err) {
       error.value = 'Error al crear la novedad';
@@ -45,11 +45,8 @@ export const useNovedadStore = defineStore('novedad', () => {
     error.value = null;
 
     try {
-      const updatedNovedad = await novedadFacade.update(id, novedad);
-      const index = novedades.value.findIndex(n => n.iD_Novedad === id);
-      if (index !== -1) {
-        novedades.value[index] = updatedNovedad;
-      }
+      await novedadFacade.update(id, novedad);
+      await fetchAll();
       return true;
     } catch (err) {
       error.value = 'Error al actualizar la novedad';

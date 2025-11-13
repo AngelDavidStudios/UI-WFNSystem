@@ -28,8 +28,8 @@ export const useProvisionStore = defineStore('provision', () => {
     error.value = null;
 
     try {
-      const newProvision = await provisionFacade.create(provision);
-      provisiones.value.push(newProvision);
+      await provisionFacade.create(provision);
+      await fetchAll();
       return true;
     } catch (err) {
       error.value = 'Error al crear la provisión';
@@ -45,11 +45,8 @@ export const useProvisionStore = defineStore('provision', () => {
     error.value = null;
 
     try {
-      const updatedProvision = await provisionFacade.update(id, provision);
-      const index = provisiones.value.findIndex(p => p.iD_Provision === id);
-      if (index !== -1) {
-        provisiones.value[index] = updatedProvision;
-      }
+      await provisionFacade.update(id, provision);
+      await fetchAll();
       return true;
     } catch (err) {
       error.value = 'Error al actualizar la provisión';

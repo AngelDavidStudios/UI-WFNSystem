@@ -55,8 +55,8 @@ const fetchAll = async (): Promise<void> => {
     error.value = null;
 
     try {
-      const newPersona = await personaFacade.create(persona);
-      personas.value.push(newPersona);
+      await personaFacade.create(persona);
+      await fetchAll();
       return true;
     } catch (err) {
       error.value = 'Error al crear la persona';
@@ -73,11 +73,8 @@ const fetchAll = async (): Promise<void> => {
 
     try {
       const originalPersona = personas.value.find(p => p.iD_Persona === id);
-      const updatedPersona = await personaFacade.update(id, persona, originalPersona);
-      const index = personas.value.findIndex(p => p.iD_Persona === id);
-      if (index !== -1) {
-        personas.value[index] = updatedPersona;
-      }
+      await personaFacade.update(id, persona, originalPersona);
+      await fetchAll();
       return true;
     } catch (err) {
       error.value = 'Error al actualizar la persona';

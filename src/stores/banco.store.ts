@@ -42,8 +42,8 @@ export const useBancoStore = defineStore('banco', () => {
     error.value = null;
 
     try {
-      const newBanco = await bancoFacade.create(banco);
-      bancos.value.push(newBanco);
+      await bancoFacade.create(banco);
+      await fetchAll();
       return true;
     } catch (err) {
       error.value = 'Error al crear el banco';
@@ -59,11 +59,8 @@ export const useBancoStore = defineStore('banco', () => {
     error.value = null;
 
     try {
-      const updatedBanco = await bancoFacade.update(id, banco);
-      const index = bancos.value.findIndex(b => b.iD_Banking === id);
-      if (index !== -1) {
-        bancos.value[index] = updatedBanco;
-      }
+      await bancoFacade.update(id, banco);
+      await fetchAll();
       return true;
     } catch (err) {
       error.value = 'Error al actualizar el banco';

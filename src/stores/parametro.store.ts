@@ -28,8 +28,8 @@ export const useParametroStore = defineStore('parametro', () => {
     error.value = null;
 
     try {
-      const newParametro = await parametroFacade.create(parametro);
-      parametros.value.push(newParametro);
+      await parametroFacade.create(parametro);
+      await fetchAll();
       return true;
     } catch (err) {
       error.value = 'Error al crear el parámetro';
@@ -45,11 +45,8 @@ export const useParametroStore = defineStore('parametro', () => {
     error.value = null;
 
     try {
-      const updatedParametro = await parametroFacade.update(id, parametro);
-      const index = parametros.value.findIndex(p => p.iD_Parametro === id);
-      if (index !== -1) {
-        parametros.value[index] = updatedParametro;
-      }
+      await parametroFacade.update(id, parametro);
+      await fetchAll();
       return true;
     } catch (err) {
       error.value = 'Error al actualizar el parámetro';
