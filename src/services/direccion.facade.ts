@@ -36,15 +36,7 @@ class DireccionFacade {
         piso: direccion.piso?.trim() || ''
       };
 
-      console.log('=== CREATING DIRECCION ===');
-      console.log('PersonaId:', personaId);
-      console.log('Payload:', JSON.stringify(payload, null, 2));
-
       const response = await apiService.post(`${this.baseURL}/api/Direccion/persona/${personaId}`, payload);
-
-      console.log('=== RESPONSE ===');
-      console.log('Type:', typeof response.data);
-      console.log('Data:', response.data);
 
       if (typeof response.data === 'string') {
         return payload as Direccion;
@@ -66,16 +58,7 @@ class DireccionFacade {
         piso: direccion.piso?.trim() || ''
       };
 
-      console.log('=== UPDATING DIRECCION ===');
-      console.log('PersonaId:', personaId);
-      console.log('DireccionId:', direccionId);
-      console.log('Payload:', JSON.stringify(payload, null, 2));
-
       const response = await apiService.put(`${this.baseURL}/api/Direccion/persona/${personaId}/direccion/${direccionId}`, payload);
-
-      console.log('=== RESPONSE ===');
-      console.log('Type:', typeof response.data);
-      console.log('Data:', response.data);
 
       if (typeof response.data === 'string') {
         return payload as Direccion;

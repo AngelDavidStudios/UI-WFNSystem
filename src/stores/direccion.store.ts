@@ -29,8 +29,8 @@ export const useDireccionStore = defineStore('direccion', () => {
     error.value = null;
 
     try {
-      const newDireccion = await direccionFacade.create(personaId, direccion);
-      direcciones.value.push(newDireccion);
+      await direccionFacade.create(personaId, direccion);
+      await fetchByPersonaId(personaId);
       return true;
     } catch (err) {
       error.value = 'Error al crear la dirección';
@@ -46,11 +46,8 @@ export const useDireccionStore = defineStore('direccion', () => {
     error.value = null;
 
     try {
-      const updatedDireccion = await direccionFacade.update(personaId, direccionId, direccion);
-      const index = direcciones.value.findIndex(d => d.iD_Direccion === direccionId);
-      if (index !== -1) {
-        direcciones.value[index] = updatedDireccion;
-      }
+      await direccionFacade.update(personaId, direccionId, direccion);
+      await fetchByPersonaId(personaId);
       return true;
     } catch (err) {
       error.value = 'Error al actualizar la dirección';
