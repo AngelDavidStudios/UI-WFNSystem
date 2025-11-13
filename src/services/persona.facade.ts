@@ -9,6 +9,9 @@ class PersonaFacade {
   }
 
   private normalizePersona(persona: any): Persona {
+    console.log('=== NORMALIZING PERSONA ===');
+    console.log('Direcciones from backend:', JSON.stringify(persona.direcciones, null, 2));
+
     return {
       ...persona,
       correo: persona.correo || [],

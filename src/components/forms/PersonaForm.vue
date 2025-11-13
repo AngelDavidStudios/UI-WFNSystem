@@ -230,6 +230,12 @@ const formData = ref<PersonaFormData>({ ...props.modelValue });
 
 watch(() => props.persona, (newPersona) => {
   if (newPersona) {
+    console.log('=== PERSONA FORM INIT ===');
+    console.log('Persona direcciones:', JSON.stringify(newPersona.direcciones, null, 2));
+
+    const mappedDirecciones = newPersona.direcciones.map(d => ({ ...d }));
+    console.log('Mapped direcciones:', JSON.stringify(mappedDirecciones, null, 2));
+
     formData.value = {
       dni: newPersona.dni,
       gender: newPersona.gender,
@@ -241,7 +247,7 @@ watch(() => props.persona, (newPersona) => {
       edad: newPersona.edad,
       correo: [...newPersona.correo],
       telefono: [...newPersona.telefono],
-      direcciones: newPersona.direcciones.map(d => ({ ...d })),
+      direcciones: mappedDirecciones,
     };
   }
 }, { immediate: true });
