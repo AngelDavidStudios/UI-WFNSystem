@@ -1,11 +1,49 @@
 export interface User {
-  username: string;
+  id: string;
+  email: string;
   isAuthenticated: boolean;
+  role?: Role;
+  permissions?: Permission[];
 }
 
 export interface LoginCredentials {
-  username: string;
+  email: string;
   password: string;
+}
+
+export interface Role {
+  id: string;
+  name: string;
+  description: string;
+  created_at: string;
+}
+
+export interface Permission {
+  id: string;
+  resource: string;
+  action: string;
+  description: string;
+  created_at: string;
+}
+
+export interface RolePermission {
+  id: string;
+  role_id: string;
+  permission_id: string;
+  created_at: string;
+}
+
+export interface UserRole {
+  id: string;
+  user_id: string;
+  role_id: string;
+  created_at: string;
+}
+
+export interface UserRegistration {
+  email: string;
+  password: string;
+  role_id: string;
 }
 
 export interface MenuItem {
@@ -246,4 +284,11 @@ export interface WorkspaceFormData {
   fechaCreacion: string;
   fechaCierre: string;
   estado: number;
+}
+
+export interface UserWithRole {
+  id: string;
+  email: string;
+  created_at: string;
+  role?: Role;
 }

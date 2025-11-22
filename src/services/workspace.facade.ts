@@ -1,11 +1,12 @@
-import { supabase } from './supabase.service';
+import supabaseService from './supabase.service';
 import type { Workspace, WorkspaceFormData } from '@/types';
 
 class WorkspaceFacade {
   private readonly tableName = 'workspaces';
 
   async getAll(): Promise<Workspace[]> {
-    const { data, error } = await supabase
+    const { data, error } = await supabaseService
+      .getClient()
       .from(this.tableName)
       .select('*')
       .order('fechaCreacion', { ascending: false });
@@ -19,7 +20,8 @@ class WorkspaceFacade {
   }
 
   async getById(id: string): Promise<Workspace> {
-    const { data, error } = await supabase
+    const { data, error } = await supabaseService
+      .getClient()
       .from(this.tableName)
       .select('*')
       .eq('iD_Workspace', id)
@@ -51,7 +53,8 @@ class WorkspaceFacade {
       estado: formData.estado,
     };
 
-    const { data, error } = await supabase
+    const { data, error } = await supabaseService
+      .getClient()
       .from(this.tableName)
       .insert(workspace)
       .select()
@@ -66,7 +69,8 @@ class WorkspaceFacade {
   }
 
   async update(id: string, updateData: Partial<Workspace>): Promise<Workspace> {
-    const { data, error } = await supabase
+    const { data, error } = await supabaseService
+      .getClient()
       .from(this.tableName)
       .update(updateData)
       .eq('iD_Workspace', id)
@@ -82,7 +86,8 @@ class WorkspaceFacade {
   }
 
   async delete(id: string): Promise<void> {
-    const { error } = await supabase
+    const { error } = await supabaseService
+      .getClient()
       .from(this.tableName)
       .delete()
       .eq('iD_Workspace', id);

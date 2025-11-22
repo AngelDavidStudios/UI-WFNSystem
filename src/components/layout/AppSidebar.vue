@@ -36,14 +36,16 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, onUnmounted } from 'vue';
+import { computed, onMounted, onUnmounted } from 'vue';
 import { useUIStore } from '@/stores/ui.store';
+import { useAuthStore } from '@/stores/auth.store';
 import SidebarItem from './SidebarItem.vue';
 import type { MenuItem } from '@/types';
 
 const uiStore = useUIStore();
+const authStore = useAuthStore();
 
-const menuItems: MenuItem[] = [
+const allMenuItems: MenuItem[] = [
   {
     id: 'dashboard',
     label: 'Dashboard',
@@ -101,7 +103,46 @@ const menuItems: MenuItem[] = [
       },
     ],
   },
+  {
+    id: 'users-management',
+    label: 'Gestión de Usuarios',
+    path: '/users-management',
+  },
 ];
+
+const menuItems = computed(() => {
+  return allMenuItems.filter(item => {
+    if (item.id === 'users-management') {
+      return authStore.hasPermission('users', 'view');
+    }
+
+    if (item.children) {
+      const filteredChildren = item.children.filter(child => {
+        const resource = child.id.replace('nomina-', '');
+        return authStore.hasPermission(resource, 'view');
+      });
+
+      if (filteredChildren.length === 0) {
+        return false;
+      }
+
+      return true;
+    }
+
+    return authStore.hasPermission(item.id, 'view');
+  }).map(item => {
+    if (item.children) {
+      return {
+        ...item,
+        children: item.children.filter(child => {
+          const resource = child.id.replace('nomina-', '');
+          return authStore.hasPermission(resource, 'view');
+        }),
+      };
+    }
+    return item;
+  });
+});
 
 const handleNavigate = () => {
   if (uiStore.isMobile) {

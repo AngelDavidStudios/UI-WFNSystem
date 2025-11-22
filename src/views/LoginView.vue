@@ -24,10 +24,11 @@
 
               <form @submit.prevent="handleSubmit" class="space-y-6">
                 <BlueprintInput
-                  id="username"
-                  v-model="credentials.username"
-                  label="USUARIO"
-                  placeholder="Ingrese usuario"
+                  id="email"
+                  v-model="credentials.email"
+                  type="email"
+                  label="EMAIL"
+                  placeholder="Ingrese su email"
                   required
                 />
 
@@ -54,7 +55,7 @@
               </form>
 
               <div class="mt-6 text-center text-xs text-blueprint-light/50">
-                <p>Usuario: Admin | Contraseña: Admin</p>
+                <p>Use sus credenciales de Supabase</p>
               </div>
             </div>
           </BlueprintCard>
@@ -76,7 +77,7 @@ const router = useRouter();
 const authStore = useAuthStore();
 
 const credentials = ref({
-  username: '',
+  email: '',
   password: '',
 });
 
@@ -92,7 +93,7 @@ const handleSubmit = async () => {
   if (success) {
     router.push('/dashboard');
   } else {
-    error.value = 'Credenciales inválidas. Use Admin/Admin';
+    error.value = authStore.error || 'Credenciales inválidas';
   }
 
   isLoading.value = false;

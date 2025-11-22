@@ -89,6 +89,12 @@ const routes: RouteRecordRaw[] = [
         name: 'nomina-parametros',
         component: () => import('@/views/NominaParametrosView.vue'),
       },
+      {
+        path: 'users-management',
+        name: 'users-management',
+        component: () => import('@/views/UsersManagementView.vue'),
+        meta: { requiresPermission: { resource: 'users', action: 'view' } },
+      },
     ],
   },
 ];
@@ -98,19 +104,32 @@ const router = createRouter({
   routes,
 });
 
-router.beforeEach((to, _from, next) => {
+router.beforeEach(async (to, _from, next) => {
   const authStore = useAuthStore();
-  authStore.checkAuth();
+  await authStore.checkAuth();
 
-  const requiresAuth = to.matched.some((record) => record.meta.requiresAuth);
+  const requiresAuth = to.matched.some((record) => record.meta.requiresAuth !== false);
 
   if (requiresAuth && !authStore.isAuthenticated) {
     next('/login');
-  } else if (to.path === '/login' && authStore.isAuthenticated) {
-    next('/dashboard');
-  } else {
-    next();
+    return;
   }
+
+  if (to.path === '/login' && authStore.isAuthenticated) {
+    next('/dashboard');
+    return;
+  }
+
+  const requiresPermission = to.meta.requiresPermission as { resource: string; action: string } | undefined;
+  if (requiresPermission) {
+    const hasPermission = authStore.hasPermission(requiresPermission.resource, requiresPermission.action);
+    if (!hasPermission) {
+      next('/dashboard');
+      return;
+    }
+  }
+
+  next();
 });
 
 export default router;
