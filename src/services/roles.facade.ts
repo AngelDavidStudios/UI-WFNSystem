@@ -77,57 +77,61 @@ class RolesFacade {
   }
 
   async getAllUsers(): Promise<UserWithRole[]> {
-    const { data: { users }, error } = await supabaseService
-      .getClient()
-      .auth.admin.listUsers();
+    const supabase = supabaseService.getClient();
+    const { data: { session } } = await supabase.auth.getSession();
 
-    if (error) {
-      console.error('Error fetching users:', error);
-      throw error;
+    if (!session) {
+      throw new Error('No authenticated session');
     }
 
-    const usersWithRoles = await Promise.all(
-      users.map(async (user: any) => {
-        const role = await this.getUserRole(user.id);
-        return {
-          id: user.id,
-          email: user.email || '',
-          created_at: user.created_at,
-          role: role || undefined,
-        };
-      })
+    const response = await fetch(
+      `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/admin-users/list`,
+      {
+        headers: {
+          'Authorization': `Bearer ${session.access_token}`,
+          'Content-Type': 'application/json',
+        },
+      }
     );
 
-    return usersWithRoles;
+    if (!response.ok) {
+      const error = await response.json();
+      console.error('Error fetching users:', error);
+      throw new Error(error.error || 'Failed to fetch users');
+    }
+
+    const { users } = await response.json();
+    return users;
   }
 
   async createUser(registration: UserRegistration): Promise<void> {
-    const { data, error } = await supabaseService
-      .getClient()
-      .auth.admin.createUser({
-        email: registration.email,
-        password: registration.password,
-        email_confirm: true,
-      });
+    const supabase = supabaseService.getClient();
+    const { data: { session } } = await supabase.auth.getSession();
 
-    if (error) {
-      console.error('Error creating user:', error);
-      throw error;
+    if (!session) {
+      throw new Error('No authenticated session');
     }
 
-    if (data.user) {
-      const { error: roleError } = await supabaseService
-        .getClient()
-        .from('user_roles')
-        .insert({
-          user_id: data.user.id,
+    const response = await fetch(
+      `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/admin-users/create`,
+      {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${session.access_token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: registration.email,
+          password: registration.password,
           role_id: registration.role_id,
-        });
-
-      if (roleError) {
-        console.error('Error assigning role:', roleError);
-        throw roleError;
+        }),
       }
+    );
+
+    if (!response.ok) {
+      const error = await response.json();
+      console.error('Error creating user:', error);
+      throw new Error(error.error || 'Failed to create user');
     }
   }
 
@@ -145,13 +149,28 @@ class RolesFacade {
   }
 
   async deleteUser(userId: string): Promise<void> {
-    const { error } = await supabaseService
-      .getClient()
-      .auth.admin.deleteUser(userId);
+    const supabase = supabaseService.getClient();
+    const { data: { session } } = await supabase.auth.getSession();
 
-    if (error) {
+    if (!session) {
+      throw new Error('No authenticated session');
+    }
+
+    const response = await fetch(
+      `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/admin-users/delete/${userId}`,
+      {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${session.access_token}`,
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+
+    if (!response.ok) {
+      const error = await response.json();
       console.error('Error deleting user:', error);
-      throw error;
+      throw new Error(error.error || 'Failed to delete user');
     }
   }
 
