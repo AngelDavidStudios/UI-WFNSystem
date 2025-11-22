@@ -23,14 +23,7 @@
         >
           <div
             v-if="show"
-            :class="[
-              'blueprint-card w-full max-h-[90vh] overflow-y-auto',
-              size === 'sm' ? 'max-w-md' : '',
-              size === 'md' ? 'max-w-2xl' : '',
-              size === 'lg' ? 'max-w-4xl' : '',
-              size === 'xl' ? 'max-w-6xl' : '',
-              size === 'large' ? 'max-w-5xl' : ''
-            ]"
+            class="blueprint-card w-full max-w-4xl max-h-[90vh] overflow-y-auto"
           >
             <div class="flex items-center justify-between mb-6 pb-4 border-b border-white/20">
               <h2 class="text-2xl font-bold text-blueprint-primary text-shadow-glow uppercase">
@@ -75,7 +68,7 @@ import BlueprintButton from './BlueprintButton.vue';
 interface Props {
   show: boolean;
   title: string;
-  size?: 'sm' | 'md' | 'lg' | 'xl' | 'large';
+  size?: 'sm' | 'md' | 'lg' | 'xl';
 }
 
 withDefaults(defineProps<Props>(), {

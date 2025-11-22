@@ -36,16 +36,14 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted } from 'vue';
+import { onMounted, onUnmounted } from 'vue';
 import { useUIStore } from '@/stores/ui.store';
-import { useAuthStore } from '@/stores/auth.store';
 import SidebarItem from './SidebarItem.vue';
 import type { MenuItem } from '@/types';
 
 const uiStore = useUIStore();
-const authStore = useAuthStore();
 
-const baseMenuItems: MenuItem[] = [
+const menuItems: MenuItem[] = [
   {
     id: 'dashboard',
     label: 'Dashboard',
@@ -104,34 +102,6 @@ const baseMenuItems: MenuItem[] = [
     ],
   },
 ];
-
-const adminMenuItems: MenuItem[] = [
-  {
-    id: 'admin-section',
-    label: 'Administración',
-    path: '',
-    children: [
-      {
-        id: 'users',
-        label: 'Usuarios',
-        path: '/users',
-      },
-      {
-        id: 'roles',
-        label: 'Roles y Permisos',
-        path: '/roles',
-      },
-    ],
-  },
-];
-
-const menuItems = computed(() => {
-  const items = [...baseMenuItems];
-  if (authStore.isAdmin) {
-    items.push(...adminMenuItems);
-  }
-  return items;
-});
 
 const handleNavigate = () => {
   if (uiStore.isMobile) {
