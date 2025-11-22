@@ -77,7 +77,12 @@
       </div>
 
       <div class="mt-12">
-        <h2 class="text-2xl font-bold text-gray-900 mb-6">Roles y Permisos</h2>
+        <div class="flex justify-between items-center mb-6">
+          <h2 class="text-2xl font-bold text-gray-900">Roles</h2>
+          <BlueprintButton @click="showCreateRoleModal = true">
+            Crear Nuevo Rol
+          </BlueprintButton>
+        </div>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div v-for="role in rolesStore.roles" :key="role.id" class="bg-white shadow rounded-lg p-6">
             <h3 class="text-lg font-semibold mb-2" :class="{
@@ -88,10 +93,68 @@
               {{ role.name }}
             </h3>
             <p class="text-sm text-gray-600 mb-4">{{ role.description }}</p>
-            <button @click="openPermissionsModal(role)" class="text-sm text-blue-600 hover:text-blue-800">
-              Ver Permisos
-            </button>
+            <div class="flex space-x-3">
+              <button @click="openPermissionsModal(role)" class="text-sm text-blue-600 hover:text-blue-800">
+                Ver Permisos
+              </button>
+              <button @click="openEditRoleModal(role)" class="text-sm text-green-600 hover:text-green-800">
+                Editar
+              </button>
+              <button @click="confirmDeleteRole(role)" class="text-sm text-red-600 hover:text-red-800">
+                Eliminar
+              </button>
+            </div>
           </div>
+        </div>
+      </div>
+
+      <div class="mt-12">
+        <div class="flex justify-between items-center mb-6">
+          <h2 class="text-2xl font-bold text-gray-900">Permisos</h2>
+          <BlueprintButton @click="showCreatePermissionModal = true">
+            Crear Nuevo Permiso
+          </BlueprintButton>
+        </div>
+        <div class="bg-white shadow overflow-hidden sm:rounded-lg">
+          <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+              <tr>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Recurso
+                </th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Acción
+                </th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Descripción
+                </th>
+                <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Acciones
+                </th>
+              </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+              <tr v-for="permission in rolesStore.permissions" :key="permission.id">
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                  {{ permission.resource }}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  {{ permission.action }}
+                </td>
+                <td class="px-6 py-4 text-sm text-gray-500">
+                  {{ permission.description }}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                  <button @click="openEditPermissionModal(permission)" class="text-green-600 hover:text-green-900 mr-4">
+                    Editar
+                  </button>
+                  <button @click="confirmDeletePermission(permission)" class="text-red-600 hover:text-red-900">
+                    Eliminar
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
@@ -124,16 +187,35 @@
       </div>
     </BlueprintModal>
 
-    <BlueprintModal v-if="showPermissionsModal" :show="showPermissionsModal" title="Permisos del Rol" @close="showPermissionsModal = false">
+    <BlueprintModal v-if="showPermissionsModal" :show="showPermissionsModal" title="Gestionar Permisos del Rol" @close="showPermissionsModal = false">
       <div class="p-6">
         <h3 class="text-lg font-semibold mb-4">Permisos de {{ selectedRole?.name }}</h3>
+
+        <div class="mb-6">
+          <h4 class="text-sm font-medium text-gray-700 mb-2">Agregar Permiso</h4>
+          <div class="flex space-x-2">
+            <select v-model="selectedPermissionId" class="flex-1 px-3 py-2 border border-gray-300 rounded-md">
+              <option value="">Seleccionar permiso</option>
+              <option v-for="permission in availablePermissions" :key="permission.id" :value="permission.id">
+                {{ permission.resource }} - {{ permission.action }}
+              </option>
+            </select>
+            <BlueprintButton @click="handleAddPermission" :disabled="!selectedPermissionId">
+              Agregar
+            </BlueprintButton>
+          </div>
+        </div>
+
         <div v-if="rolePermissions.length > 0" class="space-y-2">
           <div v-for="permission in rolePermissions" :key="permission.id"
             class="flex items-center justify-between p-3 bg-gray-50 rounded-md">
             <div>
               <p class="text-sm font-medium text-gray-900">{{ permission.resource }}</p>
-              <p class="text-xs text-gray-500">{{ permission.action }}</p>
+              <p class="text-xs text-gray-500">{{ permission.action }} - {{ permission.description }}</p>
             </div>
+            <button @click="handleRemovePermission(permission.id)" class="text-red-600 hover:text-red-800">
+              Remover
+            </button>
           </div>
         </div>
         <p v-else class="text-sm text-gray-500">No hay permisos asignados</p>
@@ -144,26 +226,55 @@
         </div>
       </div>
     </BlueprintModal>
+
+    <BlueprintModal v-if="showCreateRoleModal" :show="showCreateRoleModal" title="Crear Rol" @close="showCreateRoleModal = false">
+      <RoleForm @submit="handleCreateRole" @cancel="showCreateRoleModal = false" />
+    </BlueprintModal>
+
+    <BlueprintModal v-if="showEditRoleModal" :show="showEditRoleModal" title="Editar Rol" @close="showEditRoleModal = false">
+      <RoleForm :role="selectedRole || undefined" @submit="handleUpdateRole" @cancel="showEditRoleModal = false" />
+    </BlueprintModal>
+
+    <BlueprintModal v-if="showCreatePermissionModal" :show="showCreatePermissionModal" title="Crear Permiso" @close="showCreatePermissionModal = false">
+      <PermissionForm @submit="handleCreatePermission" @cancel="showCreatePermissionModal = false" />
+    </BlueprintModal>
+
+    <BlueprintModal v-if="showEditPermissionModal" :show="showEditPermissionModal" title="Editar Permiso" @close="showEditPermissionModal = false">
+      <PermissionForm :permission="selectedPermission || undefined" @submit="handleUpdatePermission" @cancel="showEditPermissionModal = false" />
+    </BlueprintModal>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { useRolesStore } from '@/stores/roles.store';
 import type { UserWithRole, Role, Permission, UserRegistration } from '@/types';
 import BlueprintButton from '@/components/common/BlueprintButton.vue';
 import BlueprintModal from '@/components/common/BlueprintModal.vue';
 import UserForm from '@/components/forms/UserForm.vue';
+import RoleForm from '@/components/forms/RoleForm.vue';
+import PermissionForm from '@/components/forms/PermissionForm.vue';
 
 const rolesStore = useRolesStore();
 
 const showCreateUserModal = ref(false);
 const showEditUserModal = ref(false);
 const showPermissionsModal = ref(false);
+const showCreateRoleModal = ref(false);
+const showEditRoleModal = ref(false);
+const showCreatePermissionModal = ref(false);
+const showEditPermissionModal = ref(false);
 const selectedUser = ref<UserWithRole | null>(null);
 const selectedRole = ref<Role | null>(null);
+const selectedPermission = ref<Permission | null>(null);
 const selectedRoleId = ref('');
+const selectedPermissionId = ref('');
 const rolePermissions = ref<Permission[]>([]);
+
+const availablePermissions = computed(() => {
+  const assignedIds = rolePermissions.value.map(p => p.id);
+  return rolesStore.permissions.filter(p => !assignedIds.includes(p.id));
+});
 
 onMounted(async () => {
   await rolesStore.loadRoles();
@@ -212,6 +323,84 @@ const confirmDeleteUser = async (user: UserWithRole): Promise<void> => {
 const openPermissionsModal = async (role: Role): Promise<void> => {
   selectedRole.value = role;
   rolePermissions.value = await rolesStore.getRolePermissions(role.id);
+  selectedPermissionId.value = '';
   showPermissionsModal.value = true;
+};
+
+const handleAddPermission = async (): Promise<void> => {
+  if (!selectedRole.value || !selectedPermissionId.value) return;
+
+  const success = await rolesStore.assignRolePermission(selectedRole.value.id, selectedPermissionId.value);
+  if (success) {
+    rolePermissions.value = await rolesStore.getRolePermissions(selectedRole.value.id);
+    selectedPermissionId.value = '';
+  }
+};
+
+const handleRemovePermission = async (permissionId: string): Promise<void> => {
+  if (!selectedRole.value) return;
+
+  if (confirm('¿Está seguro de remover este permiso del rol?')) {
+    const success = await rolesStore.removeRolePermission(selectedRole.value.id, permissionId);
+    if (success) {
+      rolePermissions.value = await rolesStore.getRolePermissions(selectedRole.value.id);
+    }
+  }
+};
+
+const handleCreateRole = async (data: { name: string; description: string }): Promise<void> => {
+  const success = await rolesStore.createRole(data);
+  if (success) {
+    showCreateRoleModal.value = false;
+  }
+};
+
+const openEditRoleModal = (role: Role): void => {
+  selectedRole.value = role;
+  showEditRoleModal.value = true;
+};
+
+const handleUpdateRole = async (data: { name: string; description: string }): Promise<void> => {
+  if (!selectedRole.value) return;
+
+  const success = await rolesStore.updateRole(selectedRole.value.id, data);
+  if (success) {
+    showEditRoleModal.value = false;
+    selectedRole.value = null;
+  }
+};
+
+const confirmDeleteRole = async (role: Role): Promise<void> => {
+  if (confirm(`¿Está seguro de eliminar el rol ${role.name}?`)) {
+    await rolesStore.deleteRole(role.id);
+  }
+};
+
+const handleCreatePermission = async (data: { resource: string; action: string; description: string }): Promise<void> => {
+  const success = await rolesStore.createPermission(data);
+  if (success) {
+    showCreatePermissionModal.value = false;
+  }
+};
+
+const openEditPermissionModal = (permission: Permission): void => {
+  selectedPermission.value = permission;
+  showEditPermissionModal.value = true;
+};
+
+const handleUpdatePermission = async (data: { resource: string; action: string; description: string }): Promise<void> => {
+  if (!selectedPermission.value) return;
+
+  const success = await rolesStore.updatePermission(selectedPermission.value.id, data);
+  if (success) {
+    showEditPermissionModal.value = false;
+    selectedPermission.value = null;
+  }
+};
+
+const confirmDeletePermission = async (permission: Permission): Promise<void> => {
+  if (confirm(`¿Está seguro de eliminar el permiso ${permission.resource}:${permission.action}?`)) {
+    await rolesStore.deletePermission(permission.id);
+  }
 };
 </script>

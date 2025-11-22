@@ -202,6 +202,96 @@ class RolesFacade {
       throw error;
     }
   }
+
+  async createRole(role: { name: string; description: string }): Promise<void> {
+    const { error } = await supabaseService
+      .getClient()
+      .from('roles')
+      .insert({
+        name: role.name,
+        description: role.description,
+      });
+
+    if (error) {
+      console.error('Error creating role:', error);
+      throw error;
+    }
+  }
+
+  async updateRole(roleId: string, role: { name: string; description: string }): Promise<void> {
+    const { error } = await supabaseService
+      .getClient()
+      .from('roles')
+      .update({
+        name: role.name,
+        description: role.description,
+      })
+      .eq('id', roleId);
+
+    if (error) {
+      console.error('Error updating role:', error);
+      throw error;
+    }
+  }
+
+  async deleteRole(roleId: string): Promise<void> {
+    const { error } = await supabaseService
+      .getClient()
+      .from('roles')
+      .delete()
+      .eq('id', roleId);
+
+    if (error) {
+      console.error('Error deleting role:', error);
+      throw error;
+    }
+  }
+
+  async createPermission(permission: { resource: string; action: string; description: string }): Promise<void> {
+    const { error } = await supabaseService
+      .getClient()
+      .from('permissions')
+      .insert({
+        resource: permission.resource,
+        action: permission.action,
+        description: permission.description,
+      });
+
+    if (error) {
+      console.error('Error creating permission:', error);
+      throw error;
+    }
+  }
+
+  async updatePermission(permissionId: string, permission: { resource: string; action: string; description: string }): Promise<void> {
+    const { error } = await supabaseService
+      .getClient()
+      .from('permissions')
+      .update({
+        resource: permission.resource,
+        action: permission.action,
+        description: permission.description,
+      })
+      .eq('id', permissionId);
+
+    if (error) {
+      console.error('Error updating permission:', error);
+      throw error;
+    }
+  }
+
+  async deletePermission(permissionId: string): Promise<void> {
+    const { error } = await supabaseService
+      .getClient()
+      .from('permissions')
+      .delete()
+      .eq('id', permissionId);
+
+    if (error) {
+      console.error('Error deleting permission:', error);
+      throw error;
+    }
+  }
 }
 
 export default new RolesFacade();
