@@ -24,10 +24,11 @@
 
               <form @submit.prevent="handleSubmit" class="space-y-6">
                 <BlueprintInput
-                  id="username"
-                  v-model="credentials.username"
-                  label="USUARIO"
-                  placeholder="Ingrese usuario"
+                  id="email"
+                  v-model="credentials.email"
+                  type="email"
+                  label="EMAIL"
+                  placeholder="Ingrese su email"
                   required
                 />
 
@@ -52,10 +53,6 @@
                   {{ isLoading ? 'ACCEDIENDO...' : 'INGRESAR' }}
                 </BlueprintButton>
               </form>
-
-              <div class="mt-6 text-center text-xs text-blueprint-light/50">
-                <p>Usuario: Admin | Contraseña: Admin</p>
-              </div>
             </div>
           </BlueprintCard>
         </div>
@@ -76,7 +73,7 @@ const router = useRouter();
 const authStore = useAuthStore();
 
 const credentials = ref({
-  username: '',
+  email: '',
   password: '',
 });
 
@@ -87,14 +84,18 @@ const handleSubmit = async () => {
   error.value = null;
   isLoading.value = true;
 
-  const success = await authStore.login(credentials.value);
+  try {
+    const success = await authStore.login(credentials.value);
 
-  if (success) {
-    router.push('/dashboard');
-  } else {
-    error.value = 'Credenciales inválidas. Use Admin/Admin';
+    if (success) {
+      router.push('/dashboard');
+    } else {
+      error.value = authStore.error || 'Credenciales inválidas';
+    }
+  } catch (err: any) {
+    error.value = err.message || 'Error al iniciar sesión';
+  } finally {
+    isLoading.value = false;
   }
-
-  isLoading.value = false;
 };
 </script>

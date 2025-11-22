@@ -89,6 +89,18 @@ const routes: RouteRecordRaw[] = [
         name: 'nomina-parametros',
         component: () => import('@/views/NominaParametrosView.vue'),
       },
+      {
+        path: 'users',
+        name: 'users',
+        component: () => import('@/views/UserManagementView.vue'),
+        meta: { requiresAdmin: true },
+      },
+      {
+        path: 'roles',
+        name: 'roles',
+        component: () => import('@/views/RoleManagementView.vue'),
+        meta: { requiresAdmin: true },
+      },
     ],
   },
 ];
@@ -98,15 +110,18 @@ const router = createRouter({
   routes,
 });
 
-router.beforeEach((to, _from, next) => {
+router.beforeEach(async (to, _from, next) => {
   const authStore = useAuthStore();
-  authStore.checkAuth();
+  await authStore.checkAuth();
 
   const requiresAuth = to.matched.some((record) => record.meta.requiresAuth);
+  const requiresAdmin = to.matched.some((record) => record.meta.requiresAdmin);
 
   if (requiresAuth && !authStore.isAuthenticated) {
     next('/login');
   } else if (to.path === '/login' && authStore.isAuthenticated) {
+    next('/dashboard');
+  } else if (requiresAdmin && !authStore.isAdmin) {
     next('/dashboard');
   } else {
     next();

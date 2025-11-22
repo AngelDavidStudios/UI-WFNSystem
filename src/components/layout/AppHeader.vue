@@ -22,7 +22,7 @@
         class="flex items-center gap-3 px-4 py-2 border border-white/20 hover:border-blueprint-primary transition-colors blueprint-glow"
       >
         <UserCircleIcon class="h-6 w-6 text-blueprint-primary" />
-        <span class="text-sm text-white hidden sm:block">{{ authStore.user?.username }}</span>
+        <span class="text-sm text-white hidden sm:block">{{ authStore.user?.email }}</span>
         <ChevronDownIcon class="h-4 w-4 text-blueprint-light" />
       </button>
 
