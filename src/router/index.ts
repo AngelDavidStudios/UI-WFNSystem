@@ -121,7 +121,7 @@ router.beforeEach(async (to, _from, next) => {
   }
 
   const requiresPermission = to.meta.requiresPermission as { resource: string; action: string } | undefined;
-  if (requiresPermission) {
+  if (requiresPermission && !authStore.isAdmin) {
     const hasPermission = authStore.hasPermission(requiresPermission.resource, requiresPermission.action);
     if (!hasPermission) {
       next('/dashboard');

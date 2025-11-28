@@ -113,13 +113,13 @@ const allMenuItems: MenuItem[] = [
 const menuItems = computed(() => {
   return allMenuItems.filter(item => {
     if (item.id === 'users-management') {
-      return authStore.hasPermission('users', 'view');
+      return authStore.isAdmin || authStore.hasPermission('users', 'view');
     }
 
     if (item.children) {
       const filteredChildren = item.children.filter(child => {
         const resource = child.id.replace('nomina-', '');
-        return authStore.hasPermission(resource, 'view');
+        return authStore.isAdmin || authStore.hasPermission(resource, 'view');
       });
 
       if (filteredChildren.length === 0) {
@@ -129,14 +129,14 @@ const menuItems = computed(() => {
       return true;
     }
 
-    return authStore.hasPermission(item.id, 'view');
+    return authStore.isAdmin || authStore.hasPermission(item.id, 'view');
   }).map(item => {
     if (item.children) {
       return {
         ...item,
         children: item.children.filter(child => {
           const resource = child.id.replace('nomina-', '');
-          return authStore.hasPermission(resource, 'view');
+          return authStore.isAdmin || authStore.hasPermission(resource, 'view');
         }),
       };
     }
